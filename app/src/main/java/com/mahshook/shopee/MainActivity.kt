@@ -11,8 +11,10 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,10 +63,17 @@ fun Greeting() {
     val greetingState= remember {
         mutableStateListOf<String>("mahshook","jack")
     }
+    val textFdState= remember {
+        mutableStateOf<String>("")
+    }
     for(item in greetingState){
         Text(item)
     }
-    Button(onClick = { greetingState.add("Tony") }) {
+    TextField(value = textFdState.value, onValueChange ={
+        newValue->
+        textFdState.value=newValue
+    } )
+    Button(onClick = { greetingState.add(textFdState.value) }) {
         Text("Addd name")
     }
 }
