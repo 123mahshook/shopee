@@ -13,6 +13,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,39 +43,51 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(){
-    Surface(modifier = Modifier
-        .background(Color.White)
-        .fillMaxSize()
+fun MainScreen(viewModel: MainScreenViewModel= MainScreenViewModel()) {
+    val greetingState =/*viewModel.textFieldState.observeAsState("")*/
+         remember {
+        mutableStateListOf<String>("mahshook", "jack")
+    }
+    val textFdState =viewModel.textFieldState.observeAsState("") /*remember {
+        mutableStateOf<String>("")
+    }*/
+    Surface(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize()
     ) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+            verticalArrangement = Arrangement.SpaceAround
         ) {
-            Greeting()
+            Greeting(
+                textFdState.value,
+                { newValue ->
+                   viewModel.updateData(newValue) /*textFdState.value = newValue*/
+                },
+                { greetingState.add(textFdState.value) },
+                greetingState,
+            )
         }
 
     }
 }
 
 @Composable
-fun Greeting() {
-    val greetingState= remember {
-        mutableStateListOf<String>("mahshook","jack")
-    }
-    val textFdState= remember {
-        mutableStateOf<String>("")
-    }
-    for(item in greetingState){
+fun Greeting(
+    textFdState: String,
+    onValueChange: (newValue: String) -> Unit,
+    onClick: () -> Unit,
+    greetingState: List<String>,
+) {
+
+    for (item in greetingState) {
         Text(item)
     }
-    TextField(value = textFdState.value, onValueChange ={
-        newValue->
-        textFdState.value=newValue
-    } )
-    Button(onClick = { greetingState.add(textFdState.value) }) {
-        Text("Addd name")
+    TextField(value = textFdState, onValueChange = onValueChange)
+    Button(onClick =onClick) {
+        Text("Add name")
     }
 }
 
