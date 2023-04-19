@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,8 +40,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.mahshook.shopee.ui.theme.ShopeeTheme
@@ -56,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MainScreen()
+                    UsersApplication()
                 }
             }
         }
@@ -64,18 +74,41 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel = MainScreenViewModel(),userProfiles: List<UserProfile> = userProfileList) {
+fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "users_list") {
+        composable("users_list") {
+            MainScreen(userProfiles, navController)
+        }
+        composable(
+            route = "user_details/{userId}",
+            arguments = listOf(navArgument("userId") {
+                type = NavType.IntType
+            })
+        ) { navBackStackEntry ->
+            ProfileDetailsScreen(navBackStackEntry.arguments!!.getInt("userId"), navController)
+        }
+    }
+}
+
+@Composable
+fun MainScreen(userProfiles: List<UserProfile> = userProfileList,navController: NavHostController?) {
     Scaffold(
         backgroundColor = Color.White,
         modifier = Modifier.fillMaxSize(),
-        topBar = { AppBar() }
+        topBar = {    AppBar(
+            title = "Users list",
+            icon = Icons.Default.Home
+        ) { } }
     ) { paddingvalues ->
         Surface(
             modifier = Modifier.padding(paddingvalues)
         ) {
             LazyColumn {
                 items(userProfiles) { userProfile ->
-                    profileCard(userProfile = userProfile)
+                    profileCard(userProfile = userProfile){
+                        navController?.navigate("user_details/${userProfile.id}")
+                    }
                 }
             }
         }
@@ -84,26 +117,60 @@ fun MainScreen(viewModel: MainScreenViewModel = MainScreenViewModel(),userProfil
 
 
 @Composable
-fun AppBar() {
+fun ProfileDetailsScreen(userId: Int, navController: NavHostController?) {
+    val userProfiles = userProfileList.first { userProfile:UserProfile -> userId == userProfile.id }
+    Scaffold(
+        backgroundColor = Color.White,
+        modifier = Modifier.fillMaxSize(),
+        topBar = {  AppBar(
+            title = "User profile details",
+            icon = Icons.Default.ArrowBack
+        ) {
+            navController?.navigateUp()
+        } }
+    ) { paddingvalues ->
+        Surface(
+            modifier = Modifier.padding(paddingvalues)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ){
+                profileImage(userProfiles.pictureUrl, userProfiles.status,240.dp)
+                profileContent(userProfiles.name, userProfiles.status,Alignment.CenterHorizontally)
+            }
+
+            }
+        }
+    }
+
+
+
+@Composable
+fun AppBar(title: String, icon: ImageVector, iconClickAction: () -> Unit) {
     TopAppBar(
         navigationIcon = {
             Icon(
-                imageVector = Icons.Default.Home,
-                modifier = Modifier.padding(horizontal = 12.dp),
-                contentDescription = ""
+                icon,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .clickable(onClick = { iconClickAction.invoke() })
             )
         },
-        title = { Text("Start Messaging") }
+        title = { Text(title) }
     )
 }
 
 @Composable
-fun profileCard(userProfile: UserProfile) {
+fun profileCard(userProfile: UserProfile,clickAction: () -> Unit) {
     Card(
         backgroundColor = Color.White,
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
             .wrapContentHeight()
+            .clickable(onClick = { clickAction.invoke() })
             .fillMaxWidth(),
         elevation = 8.dp
 
@@ -114,15 +181,15 @@ fun profileCard(userProfile: UserProfile) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ){
-            profileImage(userProfile.pictureUrl, userProfile.status)
-            profileContent(userProfile.name, userProfile.status)
+            profileImage(userProfile.pictureUrl, userProfile.status,72.dp)
+            profileContent(userProfile.name, userProfile.status,Alignment.Start)
         }
 
     }
 }
 
 @Composable
-fun profileImage(pictureUrl: String, onlineStatus: Boolean){
+fun profileImage(pictureUrl: String, onlineStatus: Boolean,imageSize:Dp){
     Card(
         shape = CircleShape,
         border = BorderStroke(width = 2.dp,color= if (onlineStatus)
@@ -138,7 +205,7 @@ fun profileImage(pictureUrl: String, onlineStatus: Boolean){
                     transformations(CircleCropTransformation())
                 },
             ),
-            modifier = Modifier.size(72.dp),
+            modifier = Modifier.size(imageSize),
             contentDescription = "Profile picture description",
         )
 
@@ -147,11 +214,12 @@ fun profileImage(pictureUrl: String, onlineStatus: Boolean){
 }
 
 @Composable
-fun profileContent(userName: String, onlineStatus: Boolean){
+fun profileContent(userName: String, onlineStatus: Boolean,alignment: Alignment.Horizontal){
     Column(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
+            .padding(8.dp),
+           // .fillMaxWidth()
+    horizontalAlignment = alignment
     ) {
         Text(
             text = userName,
@@ -170,10 +238,11 @@ fun profileContent(userName: String, onlineStatus: Boolean){
 
 
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ShopeeTheme {
         MainScreen()
     }
-}
+}*/
