@@ -4,3 +4,4 @@ learning Kotlin Jetpack Compose
 - TextField data  add to list and update list with help of state.
 - Working with view model and live data
 - Working with dynamic lists (LazyColumn)
+- Navigation (Navigation to detail page added, screen poping)
