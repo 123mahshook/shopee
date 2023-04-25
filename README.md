@@ -5,3 +5,21 @@ learning Kotlin Jetpack Compose
 - Working with view model and live data
 - Working with dynamic lists (LazyColumn)
 - Navigation (Navigation to detail page added, screen popping)
+- Api integration
+- MVVM Architecture
+  - ui
+    - app folder
+        - screens
+            - screen ui file
+            - screen view model
+    - themes
+    - models
+        - api
+            - web service (interface)
+        - Response
+            - data classes for API
+        - Repositary
+- Retrofit
+- Gson convert factory
+- data class
+- interface
