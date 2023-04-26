@@ -23,3 +23,7 @@ learning Kotlin Jetpack Compose
 - Gson convert factory
 - data class
 - interface
+- Coroutines
+- Suspended functions
+- Asynchronus
+- Dispatchers
