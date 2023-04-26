@@ -2,11 +2,13 @@ package com.mahshook.shopee.ui.model.response
 
 import com.google.gson.annotations.SerializedName
 
-data class MealsCategoriesResponse(val categories: List<MealResponse>)
+data class MealsCategoriesResponse(@SerializedName("data")val categories: List<MealResponse>)
 
 data class MealResponse(
-    @SerializedName("idCategory") val id: String,
-    @SerializedName("strCategory") val name: String,
-    @SerializedName("strCategoryDescription") val description: String,
-    @SerializedName("strCategoryThumb") val imageUrl: String
+    @SerializedName("ID Nation") val id: String,
+    @SerializedName("Nation") val nation: String,
+    @SerializedName("ID Year") val idYear: String,
+    @SerializedName("Year") val Year: String,
+    @SerializedName("Population") val Population: String,
+    @SerializedName("Slug Nation") val slugNation: String
 )

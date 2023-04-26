@@ -50,7 +50,7 @@ fun MealsCategoriesScreen() {
     }
     LazyColumn {
         items(rememberedMeals.value) { meal ->
-            Text(text = meal.name)
+            Text(text = meal.Population )
         }
     }
 

@@ -12,7 +12,7 @@ class MealsWebService {
 
     init {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.themealdb.com/api/json/v1/1/")
+            .baseUrl("https://datausa.io/api/") /*"https://www.themealdb.com/api/json/v1/1/")*/
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -24,7 +24,7 @@ class MealsWebService {
     }
 
     interface MealsApi {
-        @GET("categories.php")
+        @GET("data?drilldowns=Nation&measures=Population")
         fun getMeals(): Call<MealsCategoriesResponse>
     }
 
