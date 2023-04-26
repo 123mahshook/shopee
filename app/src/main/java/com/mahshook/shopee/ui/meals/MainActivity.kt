@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mahshook.shopee.ui.meals.screens.MealsCategoriesScreen
+import com.mahshook.shopee.ui.meals.screens.MealsCategoriesViewModel
 import com.mahshook.shopee.ui.model.response.MealResponse
 import com.mahshook.shopee.ui.theme.ShopeeTheme
 import com.mahshook.shopee.ui.theme.initSize
@@ -40,21 +42,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun MealsCategoriesScreen() {
-    val viewModel: MealsCategoriesViewModel = viewModel()
-   val rememberedMeals: MutableState<List<MealResponse>> = remember { mutableStateOf(emptyList<MealResponse>()) }
-    viewModel.getMeals { response ->
-        val mealsFromTheApi = response?.categories
-        rememberedMeals.value = mealsFromTheApi.orEmpty()
-    }
-    LazyColumn {
-        items(rememberedMeals.value) { meal ->
-            Text(text = meal.Population )
-        }
-    }
 
-}
 
 @Preview(showBackground = true)
 @Composable

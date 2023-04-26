@@ -7,7 +7,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MealsRepository(private val webService: MealsWebService = MealsWebService()) {
-    fun getMeals(successCallback: (response: MealsCategoriesResponse?) -> Unit) {
+     /*fun getMeals(successCallback: (response: MealsCategoriesResponse?) -> Unit) {
         return webService.getMeals().enqueue(object : Callback<MealsCategoriesResponse> {
             override fun onResponse(
                 call: Call<MealsCategoriesResponse>,
@@ -21,5 +21,8 @@ class MealsRepository(private val webService: MealsWebService = MealsWebService(
                 // TODO treat failure
             }
         })
-    }
+    }*/
+     suspend fun getMeals(): MealsCategoriesResponse {
+         return webService.getMeals()
+     }
 }
